@@ -92,7 +92,11 @@ export function TimelineWork() {
                 <video
                   ref={videoRef}
                   key={active.id}
-                  src={`${import.meta.env.BASE_URL}${active.src}`}
+                  src={
+                    active.src.startsWith('http')
+                      ? active.src
+                      : `${import.meta.env.BASE_URL}${active.src}`
+                  }
                   className="absolute inset-0 h-full w-full object-contain"
                   playsInline
                   preload="metadata"

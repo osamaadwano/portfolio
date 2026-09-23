@@ -1,6 +1,6 @@
 # Osama Adwan — Portfolio
 
-Broadcast-monitor portfolio for video editor **Osama Adwan**.
+Cyberpunk / monitor portfolio for video editor **Osama Adwan**.
 
 ## Stack
 
@@ -28,21 +28,30 @@ npm run preview
 npm run deploy
 ```
 
-Live site: https://vosamaqiadwan.github.io/portfolio/
+**Repo:** https://github.com/osamaadwano/portfolio  
+**Live:** https://osamaadwano.github.io/portfolio/
 
-Videos over 100MB are skipped on deploy (GitHub git limit). They still work locally via `npm run dev`. Host large clips elsewhere and point `src` at the URL if you need them online.
+If the site 404s: **Settings → Pages → Branch: `gh-pages` / `/` (root) → Save**.
+
+Videos are hosted on Supabase (see `workBins` in `src/data/cv.ts`). Local MP4s in `public/projects/` are for dev only and are not pushed to Pages.
+
+## Project videos
+
+- Full-quality: `public/projects/`
+- Under 50MB uploads: `public/projects/upload/`
+
 ## Opening show
 
-On first load of a browser session, a short cold-open plays (boot → uplink → ID). Skip with **ESC**. Skipped when `prefers-reduced-motion` is on, or if already seen (`sessionStorage` key `osama-intro-seen`).
+First visit per session: boot → uplink → ID. Skip with **ESC**. Skipped when `prefers-reduced-motion` is on.
 
 ## Content
 
 | What | Where |
 |---|---|
 | CV / copy | [`src/data/cv.ts`](src/data/cv.ts) |
-| Work videos | `public/projects/` + `workBins` |
+| Work videos | Supabase URLs in `workBins` |
 | Intro | [`src/components/OpeningIntro.tsx`](src/components/OpeningIntro.tsx) |
 
 ## Design tokens
 
-Defined in [`src/index.css`](src/index.css): void black, electric cyan, hot magenta, Orbitron + JetBrains Mono, HUD grids & clipped frames.
+[`src/index.css`](src/index.css): void black, electric cyan, hot magenta, Orbitron + JetBrains Mono.
