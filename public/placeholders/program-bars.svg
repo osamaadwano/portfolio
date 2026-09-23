@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" fill="none">
+  <rect width="640" height="360" fill="#0a1018"/>
+  <rect x="0" y="40" width="91" height="280" fill="#c4c4c4"/>
+  <rect x="91" y="40" width="91" height="280" fill="#c4c400"/>
+  <rect x="182" y="40" width="91" height="280" fill="#00c4c4"/>
+  <rect x="273" y="40" width="91" height="280" fill="#00c400"/>
+  <rect x="364" y="40" width="91" height="280" fill="#c400c4"/>
+  <rect x="455" y="40" width="91" height="280" fill="#c40000"/>
+  <rect x="546" y="40" width="94" height="280" fill="#0000c4"/>
+  <text x="320" y="200" text-anchor="middle" fill="#e8ebe6" font-family="monospace" font-size="14" letter-spacing="4">PLACEHOLDER PROGRAM</text>
+</svg>

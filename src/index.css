@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-bay: #05060a;
+  --color-bay-raised: #0a0d14;
+  --color-bay-panel: #10151f;
+  --color-bezel: #0e121c;
+  --color-bezel-edge: #1c2436;
+  --color-phosphor: #00f0ff;
+  --color-phosphor-dim: #007a85;
+  --color-amber: #ff2d95;
+  --color-amber-dim: #8a1850;
+  --color-signal: #e8f4ff;
+  --color-muted: #6b7a94;
+  --color-track-v: #7b5cff;
+  --color-track-a: #39ff14;
+  --color-danger: #ff3355;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-bay);
+    color: var(--color-signal);
+    font-family: var(--font-mono);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body.intro-lock {
+    overflow: hidden;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-phosphor) 40%, transparent);
+    color: #000;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .cyber-grid {
+    background-image:
+      linear-gradient(rgb(0 240 255 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(0 240 255 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .cyber-grid-fine {
+    background-image:
+      linear-gradient(rgb(255 45 149 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(0 240 255 / 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+
+  .clip-frame {
+    clip-path: polygon(
+      0 12px,
+      12px 0,
+      calc(100% - 12px) 0,
+      100% 12px,
+      100% calc(100% - 12px),
+      calc(100% - 12px) 100%,
+      12px 100%,
+      0 calc(100% - 12px)
+    );
+  }
+
+  .clip-frame-sm {
+    clip-path: polygon(
+      0 8px,
+      8px 0,
+      calc(100% - 8px) 0,
+      100% 8px,
+      100% calc(100% - 8px),
+      calc(100% - 8px) 100%,
+      8px 100%,
+      0 calc(100% - 8px)
+    );
+  }
+
+  .neon-border {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-phosphor) 35%, transparent),
+      0 0 24px color-mix(in srgb, var(--color-phosphor) 12%, transparent),
+      inset 0 0 40px color-mix(in srgb, var(--color-phosphor) 4%, transparent);
+  }
+
+  .neon-border-hot {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-amber) 40%, transparent),
+      0 0 28px color-mix(in srgb, var(--color-amber) 15%, transparent);
+  }
+
+  .phosphor-glow {
+    text-shadow:
+      0 0 8px color-mix(in srgb, var(--color-phosphor) 70%, transparent),
+      0 0 24px color-mix(in srgb, var(--color-phosphor) 35%, transparent);
+  }
+
+  .amber-glow {
+    text-shadow:
+      0 0 8px color-mix(in srgb, var(--color-amber) 70%, transparent),
+      0 0 20px color-mix(in srgb, var(--color-amber) 35%, transparent);
+  }
+
+  .glitch-text {
+    position: relative;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .glitch-text::before {
+    color: var(--color-phosphor);
+    clip-path: inset(0 0 55% 0);
+    transform: translate(-2px, 0);
+    opacity: 0.7;
+  }
+
+  .glitch-text::after {
+    color: var(--color-amber);
+    clip-path: inset(45% 0 0 0);
+    transform: translate(2px, 0);
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    display: none;
+  }
+}
