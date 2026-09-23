@@ -22,10 +22,15 @@ npm run build
 npm run preview
 ```
 
-## Project videos
+## Deploy (GitHub Pages)
 
-Put MP4s in [`public/projects/`](public/projects/) and list them in `workBins` in [`src/data/cv.ts`](src/data/cv.ts) (`src` like `/projects/my-clip.mp4`). Large `.mp4` files are gitignored — keep them local for `npm run dev`.
+```bash
+npm run deploy
+```
 
+Live site: https://vosamaqiadwan.github.io/portfolio/
+
+Videos over 100MB are skipped on deploy (GitHub git limit). They still work locally via `npm run dev`. Host large clips elsewhere and point `src` at the URL if you need them online.
 ## Opening show
 
 On first load of a browser session, a short cold-open plays (boot → uplink → ID). Skip with **ESC**. Skipped when `prefers-reduced-motion` is on, or if already seen (`sessionStorage` key `osama-intro-seen`).
