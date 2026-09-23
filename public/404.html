@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/portfolio/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="404 — Signal lost. Osama Adwan portfolio." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <title>404 // Signal Lost — Osama Adwan</title>
+    <style>
+      :root {
+        --bay: #05060a;
+        --phosphor: #00f0ff;
+        --amber: #ff2d95;
+        --signal: #e8f4ff;
+        --muted: #6b7a94;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: var(--bay);
+        color: var(--signal);
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        overflow: hidden;
+      }
+
+      .grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgb(0 240 255 / 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgb(0 240 255 / 0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+      }
+
+      .glow {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse at 40% 30%, rgb(0 240 255 / 0.1), transparent 45%),
+          radial-gradient(ellipse at 70% 70%, rgb(255 45 149 / 0.08), transparent 40%);
+        pointer-events: none;
+      }
+
+      main {
+        position: relative;
+        z-index: 1;
+        width: min(92vw, 440px);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        border: 1px solid rgb(0 240 255 / 0.35);
+        background: rgb(10 13 20 / 0.9);
+        box-shadow:
+          0 0 0 1px rgb(0 240 255 / 0.1),
+          0 0 40px rgb(0 240 255 / 0.12);
+        clip-path: polygon(
+          0 12px,
+          12px 0,
+          calc(100% - 12px) 0,
+          100% 12px,
+          100% calc(100% - 12px),
+          calc(100% - 12px) 100%,
+          12px 100%,
+          0 calc(100% - 12px)
+        );
+      }
+
+      .corner {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-color: var(--amber);
+        border-style: solid;
+      }
+
+      .corner.tl {
+        top: 0;
+        left: 0;
+        border-width: 1px 0 0 1px;
+      }
+      .corner.tr {
+        top: 0;
+        right: 0;
+        border-width: 1px 1px 0 0;
+      }
+      .corner.bl {
+        bottom: 0;
+        left: 0;
+        border-width: 0 0 1px 1px;
+      }
+      .corner.br {
+        right: 0;
+        bottom: 0;
+        border-width: 0 1px 1px 0;
+      }
+
+      .code {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(4rem, 18vw, 6.5rem);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 0.04em;
+        color: var(--signal);
+        text-shadow:
+          -2px 0 var(--phosphor),
+          2px 0 var(--amber);
+      }
+
+      .label {
+        margin-top: 0.75rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: var(--amber);
+        text-shadow: 0 0 10px rgb(255 45 149 / 0.5);
+      }
+
+      .msg {
+        margin: 1.25rem 0 0;
+        font-size: 0.8rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .msg strong {
+        color: var(--phosphor);
+        font-weight: 500;
+      }
+
+      a {
+        display: inline-block;
+        margin-top: 1.75rem;
+        padding: 0.7rem 1.4rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--phosphor);
+        border: 1px solid rgb(0 240 255 / 0.55);
+        background: rgb(0 240 255 / 0.1);
+        box-shadow: 0 0 24px rgb(0 240 255 / 0.15);
+        clip-path: polygon(
+          0 8px,
+          8px 0,
+          calc(100% - 8px) 0,
+          100% 8px,
+          100% calc(100% - 8px),
+          calc(100% - 8px) 100%,
+          8px 100%,
+          0 calc(100% - 8px)
+        );
+        transition: background 0.2s, box-shadow 0.2s;
+      }
+
+      a:hover {
+        background: rgb(0 240 255 / 0.2);
+        box-shadow: 0 0 32px rgb(0 240 255 / 0.3);
+      }
+
+      .tc {
+        margin-top: 1.5rem;
+        font-size: 0.65rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid" aria-hidden="true"></div>
+    <div class="glow" aria-hidden="true"></div>
+    <main>
+      <span class="corner tl" aria-hidden="true"></span>
+      <span class="corner tr" aria-hidden="true"></span>
+      <span class="corner bl" aria-hidden="true"></span>
+      <span class="corner br" aria-hidden="true"></span>
+
+      <div class="code">404</div>
+      <p class="label">ERR // NO_SIGNAL</p>
+      <p class="msg">
+        This path is offline.<br />
+        <strong>SEQ</strong> not found in the edit bay.
+      </p>
+      <a href="/portfolio/">Return // Home</a>
+      <p class="tc">OSAMA / EDIT · LINK LOST</p>
+    </main>
+  </body>
+</html>

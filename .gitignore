@@ -17,6 +17,8 @@ dist-ssr
 *.sln
 *.sw?
 
-# Large local media (serve from public/projects)
+# Large local media (hosted on Supabase for production)
+public/projects/**/*.mp4
 public/projects/*.mp4
+*.mp4
 
