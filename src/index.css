@@ -4,20 +4,20 @@
   --font-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --color-bay: #05060a;
-  --color-bay-raised: #0a0d14;
-  --color-bay-panel: #10151f;
+  --color-bay: #06080d;
+  --color-bay-raised: #0c1018;
+  --color-bay-panel: #121820;
   --color-bezel: #0e121c;
-  --color-bezel-edge: #1c2436;
-  --color-phosphor: #00f0ff;
-  --color-phosphor-dim: #007a85;
-  --color-amber: #ff2d95;
-  --color-amber-dim: #8a1850;
-  --color-signal: #e8f4ff;
-  --color-muted: #6b7a94;
-  --color-track-v: #7b5cff;
-  --color-track-a: #39ff14;
-  --color-danger: #ff3355;
+  --color-bezel-edge: #1e2636;
+  --color-phosphor: #00e8f0;
+  --color-phosphor-dim: #007a82;
+  --color-amber: #b8ff3c;
+  --color-amber-dim: #6a9420;
+  --color-signal: #e8f0f7;
+  --color-muted: #7a8699;
+  --color-track-v: #7b8cff;
+  --color-track-a: #6dff9a;
+  --color-danger: #ff4d5e;
 }
 
 @layer base {
@@ -28,11 +28,43 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background: var(--color-bay);
     color: var(--color-signal);
     font-family: var(--font-mono);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    background-color: var(--color-bay);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 10% -10%, rgb(0 232 240 / 0.11), transparent 55%),
+      radial-gradient(ellipse 60% 45% at 95% 30%, rgb(184 255 60 / 0.06), transparent 50%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgb(123 140 255 / 0.07), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgb(0 232 240 / 0.04), transparent 50%),
+      linear-gradient(
+        180deg,
+        #06080d 0%,
+        #080c14 35%,
+        #070a11 70%,
+        #05070c 100%
+      );
+    background-attachment: fixed;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image:
+      linear-gradient(rgb(0 232 240 / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(0 232 240 / 0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
   }
 
   body.intro-lock {
@@ -40,7 +72,7 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--color-phosphor) 40%, transparent);
+    background: color-mix(in srgb, var(--color-phosphor) 35%, transparent);
     color: #000;
   }
 }
@@ -54,97 +86,23 @@
     font-family: var(--font-mono);
   }
 
-  .cyber-grid {
-    background-image:
-      linear-gradient(rgb(0 240 255 / 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(0 240 255 / 0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-  }
-
-  .cyber-grid-fine {
-    background-image:
-      linear-gradient(rgb(255 45 149 / 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(0 240 255 / 0.05) 1px, transparent 1px);
-    background-size: 24px 24px;
-    pointer-events: none;
-  }
-
-  .clip-frame {
-    clip-path: polygon(
-      0 12px,
-      12px 0,
-      calc(100% - 12px) 0,
-      100% 12px,
-      100% calc(100% - 12px),
-      calc(100% - 12px) 100%,
-      12px 100%,
-      0 calc(100% - 12px)
-    );
-  }
-
-  .clip-frame-sm {
-    clip-path: polygon(
-      0 8px,
-      8px 0,
-      calc(100% - 8px) 0,
-      100% 8px,
-      100% calc(100% - 8px),
-      calc(100% - 8px) 100%,
-      8px 100%,
-      0 calc(100% - 8px)
-    );
+  .soft-panel {
+    border: 1px solid color-mix(in srgb, var(--color-phosphor) 18%, transparent);
+    background: color-mix(in srgb, var(--color-bay-raised) 92%, transparent);
   }
 
   .neon-border {
     box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-phosphor) 35%, transparent),
-      0 0 24px color-mix(in srgb, var(--color-phosphor) 12%, transparent),
-      inset 0 0 40px color-mix(in srgb, var(--color-phosphor) 4%, transparent);
-  }
-
-  .neon-border-hot {
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-amber) 40%, transparent),
-      0 0 28px color-mix(in srgb, var(--color-amber) 15%, transparent);
+      0 0 0 1px color-mix(in srgb, var(--color-phosphor) 22%, transparent),
+      0 0 20px color-mix(in srgb, var(--color-phosphor) 6%, transparent);
   }
 
   .phosphor-glow {
-    text-shadow:
-      0 0 8px color-mix(in srgb, var(--color-phosphor) 70%, transparent),
-      0 0 24px color-mix(in srgb, var(--color-phosphor) 35%, transparent);
+    text-shadow: 0 0 12px color-mix(in srgb, var(--color-phosphor) 40%, transparent);
   }
 
   .amber-glow {
-    text-shadow:
-      0 0 8px color-mix(in srgb, var(--color-amber) 70%, transparent),
-      0 0 20px color-mix(in srgb, var(--color-amber) 35%, transparent);
-  }
-
-  .glitch-text {
-    position: relative;
-  }
-
-  .glitch-text::before,
-  .glitch-text::after {
-    content: attr(data-text);
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .glitch-text::before {
-    color: var(--color-phosphor);
-    clip-path: inset(0 0 55% 0);
-    transform: translate(-2px, 0);
-    opacity: 0.7;
-  }
-
-  .glitch-text::after {
-    color: var(--color-amber);
-    clip-path: inset(45% 0 0 0);
-    transform: translate(2px, 0);
-    opacity: 0.7;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--color-amber) 35%, transparent);
   }
 }
 
@@ -159,10 +117,5 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  .glitch-text::before,
-  .glitch-text::after {
-    display: none;
   }
 }

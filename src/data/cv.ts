@@ -18,6 +18,8 @@ export type WorkBin = {
   note: string
   accent: string
   src: string
+  /** Optional static poster when video-frame seek fails (e.g. vertical clips). */
+  poster?: string
 }
 
 export const workBins: WorkBin[] = [
@@ -32,42 +34,44 @@ export const workBins: WorkBin[] = [
     id: 'study-zone',
     label: 'STUDY ZONE',
     note: 'Educational promo · narrative rhythm',
-    accent: '#ff2d95',
+    accent: '#b8ff3c',
     src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/study-zone.mp4',
   },
   {
     id: 'al-madraj',
     label: 'المدرج',
     note: 'Location story · atmosphere & grade',
-    accent: '#7b5cff',
+    accent: '#7b8cff',
     src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/al-madraj.mp4',
   },
   {
     id: 'maryam',
     label: 'مريم',
     note: 'Portrait edit · color & sound',
-    accent: '#39ff14',
+    accent: '#6dff9a',
     src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/maryam.mp4',
+    poster: 'projects/thumbs/maryam.jpg',
   },
   {
     id: 'apeex',
     label: 'APEEX',
     note: 'Brand / product spot',
-    accent: '#ffaa00',
+    accent: '#e8c547',
     src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/apeex.mp4',
+    poster: 'projects/thumbs/apeex.jpg',
   },
   {
     id: 'harry-potter',
     label: 'HARRY POTTER',
     note: 'Fan edit · motion & cut',
-    accent: '#ff6b4a',
+    accent: '#5ad0c8',
     src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/harry-potter.mp4',
   },
   {
     id: 'one-piece',
     label: 'ONE PIECE',
     note: 'Fan edit · energy & timing',
-    accent: '#4af0c0',
+    accent: '#8ab4ff',
     src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/one-piece.mp4',
   },
 ]
@@ -168,9 +172,3 @@ export const skills: SkillScope[] = [
   { id: 'tourism', label: 'Tourism & Travel', group: 'Industries' },
   { id: 'social', label: 'Social Media', group: 'Industries' },
 ]
-
-export const education = {
-  field: 'Information Engineering',
-  school: 'Syrian Virtual University (SVU)',
-  note: 'Studies discontinued',
-} as const

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { education, profile } from '../data/cv'
+import { profile } from '../data/cv'
 
 export function ContactDeck() {
   const [copied, setCopied] = useState(false)
@@ -18,8 +18,8 @@ export function ContactDeck() {
     <section id="contact" className="relative px-4 pt-20 pb-28 sm:px-8">
       <div className="mx-auto max-w-5xl">
         <header className="mb-10">
-          <p className="font-mono text-[10px] tracking-[0.3em] text-amber uppercase amber-glow">
-            DECK // OUT
+          <p className="font-mono text-[10px] tracking-[0.28em] text-amber uppercase">
+            Contact
           </p>
           <h2 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
             About & Contact
@@ -27,7 +27,7 @@ export function ContactDeck() {
         </header>
 
         <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
-          <div className="clip-frame border border-phosphor/25 bg-bay-raised/70 p-6 sm:p-8">
+          <div className="rounded-sm border border-phosphor/15 bg-bay-raised/60 p-6 sm:p-8">
             <p className="text-base leading-relaxed text-signal/90">
               {profile.summary}
             </p>
@@ -43,16 +43,9 @@ export function ContactDeck() {
                   Languages
                 </dt>
                 <dd className="mt-1 text-sm">
-                  {profile.languages.map((l) => `${l.name} (${l.level})`).join(' · ')}
-                </dd>
-              </div>
-              <div className="sm:col-span-2">
-                <dt className="font-mono text-[10px] tracking-widest text-muted uppercase">
-                  Education
-                </dt>
-                <dd className="mt-1 text-sm">
-                  {education.field} — {education.school}
-                  <span className="text-muted"> · {education.note}</span>
+                  {profile.languages
+                    .map((l) => `${l.name} (${l.level})`)
+                    .join(' · ')}
                 </dd>
               </div>
             </dl>
@@ -61,29 +54,31 @@ export function ContactDeck() {
           <div className="flex flex-col gap-3">
             <a
               href={`mailto:${profile.email}`}
-              className="clip-frame-sm border border-phosphor/50 bg-phosphor/10 px-5 py-4 font-mono text-sm tracking-wide text-phosphor shadow-[0_0_24px_rgb(0_240_255/0.12)] transition hover:bg-phosphor/20"
+              className="rounded-sm border border-phosphor/40 bg-phosphor/10 px-5 py-4 font-mono text-sm tracking-wide text-phosphor transition duration-300 hover:bg-phosphor/18"
             >
               {profile.email}
             </a>
             <button
               type="button"
               onClick={copyEmail}
-              className="clip-frame-sm border border-bezel-edge px-5 py-3 text-left font-mono text-xs tracking-[0.18em] text-muted uppercase transition hover:border-amber/50 hover:text-amber"
+              className="rounded-sm border border-bezel-edge px-5 py-3 text-left font-mono text-xs tracking-[0.16em] text-muted uppercase transition duration-300 hover:border-amber/45 hover:text-amber"
             >
-              {copied ? 'Copied ✓' : 'Copy Email'}
+              {copied ? 'Copied' : 'Copy Email'}
             </button>
             <a
               href={`tel:${profile.phone.replace(/\s/g, '')}`}
-              className="clip-frame-sm border border-phosphor/20 px-5 py-4 font-mono text-sm text-signal transition hover:border-phosphor/40"
+              className="rounded-sm border border-phosphor/15 px-5 py-4 font-mono text-sm text-signal transition duration-300 hover:border-phosphor/35"
             >
               {profile.phone}
             </a>
           </div>
         </div>
 
-        <footer className="mt-16 flex flex-wrap items-center justify-between gap-3 border-t border-phosphor/20 pt-6 font-mono text-[10px] tracking-[0.15em] text-muted uppercase">
-          <span>© {new Date().getFullYear()} {profile.name}</span>
-          <span className="text-phosphor/70">Frame-by-frame // On time</span>
+        <footer className="mt-16 flex flex-wrap items-center justify-between gap-3 border-t border-phosphor/12 pt-6 font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
+          <span>
+            © {new Date().getFullYear()} {profile.name}
+          </span>
+          <span className="text-phosphor/60">Frame-by-frame · On time</span>
         </footer>
       </div>
     </section>

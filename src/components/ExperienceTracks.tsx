@@ -7,19 +7,21 @@ const trackColor = {
   A1: 'var(--color-track-a)',
 } as const
 
+const ease = [0.22, 1, 0.36, 1] as const
+
 export function ExperienceTracks() {
   return (
     <section id="experience" className="relative px-4 py-20 sm:px-8">
       <div className="mx-auto max-w-5xl">
         <header className="mb-10">
-          <p className="font-mono text-[10px] tracking-[0.3em] text-amber uppercase amber-glow">
-            TIMELINE // TRACKS
+          <p className="font-mono text-[10px] tracking-[0.28em] text-amber uppercase">
+            Experience
           </p>
           <h2 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Experience
+            Timeline
           </h2>
           <p className="mt-2 max-w-lg text-sm text-muted">
-            Roles laid out as clips on video and audio tracks.
+            Roles as clips on video and audio tracks.
           </p>
         </header>
 
@@ -27,15 +29,15 @@ export function ExperienceTracks() {
           {experience.map((clip, i) => (
             <motion.article
               key={clip.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ delay: i * 0.06, duration: 0.4 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: i * 0.05, duration: 0.65, ease }}
               className="grid gap-4 sm:grid-cols-[4.5rem_1fr]"
             >
-              <div className="flex items-start gap-2 pt-1 font-mono text-[10px] tracking-wider text-muted">
+              <div className="flex items-start pt-1">
                 <span
-                  className="rounded px-1.5 py-0.5 text-[9px] font-semibold text-bay"
+                  className="rounded-sm px-1.5 py-0.5 font-mono text-[9px] font-semibold text-bay"
                   style={{ background: trackColor[clip.track] }}
                 >
                   {clip.track}
@@ -43,24 +45,24 @@ export function ExperienceTracks() {
               </div>
 
               <div>
-                <div className="mb-3 h-8 overflow-hidden border border-phosphor/20 bg-bay-panel">
+                <div className="mb-3 h-7 overflow-hidden rounded-sm border border-phosphor/15 bg-bay-panel">
                   <motion.div
                     className="origin-left flex h-full items-center truncate px-3 font-mono text-[10px] tracking-wide text-signal"
                     style={{
                       width: clip.width,
-                      background: `linear-gradient(90deg, ${trackColor[clip.track]}55, ${trackColor[clip.track]}22)`,
+                      background: `linear-gradient(90deg, ${trackColor[clip.track]}44, ${trackColor[clip.track]}18)`,
                       borderRight: `2px solid ${trackColor[clip.track]}`,
                     }}
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.75, ease }}
                   >
                     {clip.role}
                   </motion.div>
                 </div>
 
-                <div className="border border-phosphor/15 bg-bay-raised/60 px-4 py-4">
+                <div className="rounded-sm border border-phosphor/12 bg-bay-raised/50 px-4 py-4">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <h3 className="font-display text-lg font-semibold">
                       {clip.role}
@@ -76,7 +78,7 @@ export function ExperienceTracks() {
                         key={b}
                         className="flex gap-2 text-sm text-signal/85"
                       >
-                        <span className="mt-2 size-1 shrink-0 rounded-full bg-phosphor/70" />
+                        <span className="mt-2 size-1 shrink-0 rounded-full bg-phosphor/60" />
                         {b}
                       </li>
                     ))}

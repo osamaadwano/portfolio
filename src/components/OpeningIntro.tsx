@@ -9,23 +9,23 @@ type Props = {
   onComplete: () => void
 }
 
+const ease = [0.22, 1, 0.36, 1] as const
+
 export function OpeningIntro({ onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('boot')
   const [frames, setFrames] = useState(0)
   const [bootLines, setBootLines] = useState(0)
 
   const lines = [
-    '> INIT EDIT_CORE…',
-    '> LOAD NEURAL_PIPE…',
-    '> SYNC COLOR_LUT…',
-    '> AUDIO BUS OK',
-    '> LINK ESTABLISHED',
+    '> Init edit core…',
+    '> Sync color & audio…',
+    '> Link established',
   ]
 
   useEffect(() => {
-    const t1 = window.setTimeout(() => setPhase('link'), 1600)
-    const t2 = window.setTimeout(() => setPhase('id'), 3000)
-    const t3 = window.setTimeout(() => onComplete(), 5400)
+    const t1 = window.setTimeout(() => setPhase('link'), 1800)
+    const t2 = window.setTimeout(() => setPhase('id'), 3200)
+    const t3 = window.setTimeout(() => onComplete(), 5600)
     return () => {
       window.clearTimeout(t1)
       window.clearTimeout(t2)
@@ -37,7 +37,7 @@ export function OpeningIntro({ onComplete }: Props) {
     if (phase !== 'boot') return
     const id = window.setInterval(() => {
       setBootLines((n) => Math.min(n + 1, lines.length))
-    }, 280)
+    }, 420)
     return () => window.clearInterval(id)
   }, [phase, lines.length])
 
@@ -60,44 +60,45 @@ export function OpeningIntro({ onComplete }: Props) {
       className="fixed inset-0 z-[100] flex items-center justify-center bg-bay"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.35 }}
+      transition={{ duration: 0.55, ease }}
       role="dialog"
       aria-label="Opening sequence"
     >
-      <div className="cyber-grid absolute inset-0 opacity-60" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(0_240_255/0.08),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(0_232_240/0.06),transparent_55%)]" />
 
       <button
         type="button"
         onClick={onComplete}
-        className="absolute top-5 right-5 z-20 font-mono text-[11px] tracking-[0.2em] text-muted uppercase transition hover:text-amber"
+        className="absolute top-5 right-5 z-20 font-mono text-[11px] tracking-[0.18em] text-muted uppercase transition duration-300 hover:text-phosphor"
       >
-        ESC // SKIP
+        Esc · Skip
       </button>
 
-      <div className="relative aspect-video w-[min(92vw,880px)] overflow-hidden neon-border clip-frame bg-bay-raised">
+      <div className="relative aspect-video w-[min(92vw,720px)] overflow-hidden rounded-sm border border-phosphor/20 bg-bay-raised">
         <AnimatePresence mode="wait">
           {phase === 'boot' && (
             <motion.div
               key="boot"
-              className="absolute inset-0 flex flex-col justify-center px-8 sm:px-14"
+              className="absolute inset-0 flex flex-col justify-center px-8 sm:px-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.25 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease }}
             >
-              <p className="mb-4 font-mono text-[10px] tracking-[0.35em] text-amber uppercase amber-glow">
-                SYSTEM BOOT
+              <p className="mb-4 font-mono text-[10px] tracking-[0.28em] text-amber uppercase">
+                Boot
               </p>
-              <ul className="space-y-2 font-mono text-xs text-phosphor sm:text-sm">
+              <ul className="space-y-2.5 font-mono text-xs text-phosphor sm:text-sm">
                 {lines.slice(0, bootLines).map((line) => (
-                  <li key={line} className="phosphor-glow">
+                  <motion.li
+                    key={line}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease }}
+                  >
                     {line}
-                  </li>
+                  </motion.li>
                 ))}
-                {bootLines < lines.length && (
-                  <li className="animate-pulse text-muted">_</li>
-                )}
               </ul>
             </motion.div>
           )}
@@ -106,19 +107,18 @@ export function OpeningIntro({ onComplete }: Props) {
             <motion.div
               key="link"
               className="absolute inset-0 flex flex-col items-center justify-center"
-              initial={{ opacity: 0, scale: 1.04 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.5, ease }}
             >
-              <div className="cyber-grid-fine absolute inset-0" />
               <motion.div
-                className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-phosphor to-transparent shadow-[0_0_20px_var(--color-phosphor)]"
-                animate={{ top: ['15%', '85%', '15%'] }}
-                transition={{ duration: 1.2, ease: 'linear' }}
+                className="absolute inset-x-8 h-px bg-gradient-to-r from-transparent via-phosphor/80 to-transparent"
+                animate={{ top: ['22%', '78%'] }}
+                transition={{ duration: 1.8, ease: 'easeInOut' }}
               />
-              <p className="font-mono text-xs tracking-[0.4em] text-phosphor uppercase phosphor-glow">
-                ESTABLISHING UPLINK
+              <p className="font-mono text-xs tracking-[0.28em] text-phosphor uppercase">
+                Syncing
               </p>
               <p className="mt-3 font-mono text-[10px] text-muted tabular-nums">
                 {formatTimecode(frames)}
@@ -129,35 +129,24 @@ export function OpeningIntro({ onComplete }: Props) {
           {phase === 'id' && (
             <motion.div
               key="id"
-              className="absolute inset-0 flex items-center justify-center bg-bay"
+              className="absolute inset-0 flex items-center justify-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.55, ease }}
             >
-              <div className="cyber-grid absolute inset-0 opacity-50" />
-              <div className="relative w-[min(86%,440px)] border border-phosphor/40 bg-bay-panel/90 px-8 py-8 text-center shadow-[0_0_60px_rgb(0_240_255/0.15)]">
-                <span className="absolute top-0 left-0 h-3 w-3 border-t border-l border-amber" />
-                <span className="absolute top-0 right-0 h-3 w-3 border-t border-r border-amber" />
-                <span className="absolute bottom-0 left-0 h-3 w-3 border-b border-l border-amber" />
-                <span className="absolute right-0 bottom-0 h-3 w-3 border-r border-b border-amber" />
-
-                <p className="font-mono text-[10px] tracking-[0.35em] text-amber uppercase amber-glow">
-                  ID // EDITOR_01
+              <div className="w-[min(86%,400px)] rounded-sm border border-phosphor/25 bg-bay-panel/90 px-8 py-8 text-center">
+                <p className="font-mono text-[10px] tracking-[0.28em] text-amber uppercase">
+                  Editor
                 </p>
-                <h1
-                  className="font-display glitch-text mt-3 text-3xl font-black tracking-tight text-signal sm:text-4xl"
-                  data-text={profile.name.toUpperCase()}
-                >
-                  {profile.name.toUpperCase()}
+                <h1 className="font-display mt-3 text-3xl font-extrabold tracking-tight text-signal sm:text-4xl">
+                  {profile.name}
                 </h1>
-                <p className="mt-2 font-mono text-xs tracking-[0.2em] text-phosphor uppercase">
+                <p className="mt-2 font-mono text-xs tracking-[0.16em] text-phosphor uppercase">
                   Video Editor
                 </p>
-                <div className="mt-6 flex items-center justify-between border-t border-phosphor/20 pt-3 font-mono text-[10px] text-muted">
-                  <span>IN // 00:00:00:00</span>
-                  <span className="text-phosphor">{formatTimecode(frames)}</span>
-                  <span>OUT // READY</span>
+                <div className="mt-6 border-t border-phosphor/15 pt-3 font-mono text-[10px] text-muted">
+                  {formatTimecode(frames)} · Ready
                 </div>
               </div>
             </motion.div>

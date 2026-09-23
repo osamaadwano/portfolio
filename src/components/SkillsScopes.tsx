@@ -2,13 +2,15 @@ import { motion } from 'framer-motion'
 import { skills } from '../data/cv'
 
 const groupAccent: Record<string, string> = {
-  Software: '#00f0ff',
-  Editing: '#ff2d95',
-  Color: '#7b5cff',
-  Sound: '#39ff14',
-  'Motion & VFX': '#ffaa00',
-  Industries: '#ff6b4a',
+  Software: '#00e8f0',
+  Editing: '#b8ff3c',
+  Color: '#7b8cff',
+  Sound: '#6dff9a',
+  'Motion & VFX': '#e8c547',
+  Industries: '#8ab4ff',
 }
+
+const ease = [0.22, 1, 0.36, 1] as const
 
 export function SkillsScopes() {
   const groups = [...new Set(skills.map((s) => s.group))]
@@ -17,30 +19,27 @@ export function SkillsScopes() {
     <section id="skills" className="relative px-4 py-20 sm:px-8">
       <div className="mx-auto max-w-5xl">
         <header className="mb-10">
-          <p className="font-mono text-[10px] tracking-[0.3em] text-amber uppercase amber-glow">
-            MODULES // NODE_MAP
+          <p className="font-mono text-[10px] tracking-[0.28em] text-amber uppercase">
+            Skills
           </p>
           <h2 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Skills
+            Toolkit
           </h2>
         </header>
 
         <div className="space-y-8">
           {groups.map((group) => {
-            const accent = groupAccent[group] ?? '#00f0ff'
+            const accent = groupAccent[group] ?? '#00e8f0'
             const items = skills.filter((s) => s.group === group)
 
             return (
               <div key={group}>
                 <div className="mb-3 flex items-center gap-2">
                   <span
-                    className="size-1.5"
-                    style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
+                    className="size-1.5 rounded-full"
+                    style={{ background: accent }}
                   />
-                  <h3
-                    className="font-mono text-[11px] tracking-[0.22em] uppercase"
-                    style={{ color: accent }}
-                  >
+                  <h3 className="font-mono text-[11px] tracking-[0.18em] text-muted uppercase">
                     {group}
                   </h3>
                 </div>
@@ -49,23 +48,13 @@ export function SkillsScopes() {
                   {items.map((skill, i) => (
                     <motion.span
                       key={skill.id}
-                      initial={{ opacity: 0, y: 8 }}
+                      initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: i * 0.04, duration: 0.3 }}
-                      className="clip-frame-sm relative border bg-bay-raised/80 px-4 py-2.5 font-mono text-xs tracking-wide text-signal"
-                      style={{
-                        borderColor: `color-mix(in srgb, ${accent} 40%, transparent)`,
-                      }}
+                      transition={{ delay: i * 0.03, duration: 0.55, ease }}
+                      className="rounded-sm border border-phosphor/15 bg-bay-raised/70 px-3.5 py-2 font-mono text-xs tracking-wide text-signal"
                     >
-                      <span
-                        className="absolute top-1.5 left-1.5 size-1"
-                        style={{
-                          background: accent,
-                          boxShadow: `0 0 6px ${accent}`,
-                        }}
-                      />
-                      <span className="pl-2">{skill.label}</span>
+                      {skill.label}
                     </motion.span>
                   ))}
                 </div>
