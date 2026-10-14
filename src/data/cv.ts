@@ -1,7 +1,7 @@
 export const profile = {
   name: 'Osama Adwan',
   title: 'Video Editor · Post-Production',
-  location: 'As-Suwayda, Syria',
+  location: 'Damascus, Syria',
   phone: '+963 939 651 766',
   email: 'vosamaqiadwan@gmail.com',
   summary:
