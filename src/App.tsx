@@ -7,11 +7,13 @@ import { OpeningIntro } from './components/OpeningIntro'
 import { SkillsScopes } from './components/SkillsScopes'
 import { TimelineWork } from './components/TimelineWork'
 import { profile } from './data/cv'
+import { useActiveSection } from './hooks/useActiveSection'
 import { useIntroGate } from './hooks/useIntroGate'
 
 export default function App() {
   const { ready, showIntro, complete } = useIntroGate()
   const contentVisible = ready && !showIntro
+  const active = useActiveSection()
 
   return (
     <>
@@ -34,18 +36,25 @@ export default function App() {
             <span className="text-phosphor"> · EDIT</span>
           </a>
           <div className="hidden items-center gap-6 font-mono text-[10px] tracking-[0.18em] text-muted uppercase sm:flex">
-            <a href="#work" className="transition hover:text-phosphor">
-              Work
-            </a>
-            <a href="#experience" className="transition hover:text-phosphor">
-              Experience
-            </a>
-            <a href="#skills" className="transition hover:text-phosphor">
-              Skills
-            </a>
-            <a href="#contact" className="transition hover:text-amber">
-              Contact
-            </a>
+            {(
+              [
+                ['work', 'Work'],
+                ['experience', 'Experience'],
+                ['skills', 'Skills'],
+                ['contact', 'Contact'],
+              ] as const
+            ).map(([id, label]) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                aria-current={active === id ? 'true' : undefined}
+                className={`transition hover:text-phosphor ${
+                  active === id ? 'text-phosphor' : ''
+                }`}
+              >
+                {label}
+              </a>
+            ))}
           </div>
         </nav>
 
