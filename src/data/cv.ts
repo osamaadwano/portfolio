@@ -18,8 +18,10 @@ export type WorkBin = {
   note: string
   accent: string
   src: string
-  /** Optional static poster when video-frame seek fails (e.g. vertical clips). */
-  poster?: string
+  /** Still frame. The card shows this instead of decoding the video. */
+  poster: string
+  /** Seconds. Shown on the card so the file is not opened until playback. */
+  duration: number
 }
 
 export const workBins: WorkBin[] = [
@@ -29,6 +31,8 @@ export const workBins: WorkBin[] = [
     note: 'Showreel cut · pacing & polish',
     accent: '#00f0ff',
     src: 'projects/upload/reel-01.mp4',
+    poster: 'projects/thumbs/reel-01.jpg',
+    duration: 55.5,
   },
   {
     id: 'study-zone',
@@ -36,6 +40,8 @@ export const workBins: WorkBin[] = [
     note: 'Educational promo · narrative rhythm',
     accent: '#b8ff3c',
     src: 'projects/upload/study-zone.mp4',
+    poster: 'projects/thumbs/study-zone.jpg',
+    duration: 46.1,
   },
   {
     id: 'al-madraj',
@@ -43,6 +49,8 @@ export const workBins: WorkBin[] = [
     note: 'Location story · atmosphere & grade',
     accent: '#7b8cff',
     src: 'projects/upload/al-madraj.mp4',
+    poster: 'projects/thumbs/al-madraj.jpg',
+    duration: 85.45,
   },
   {
     id: 'maryam',
@@ -51,6 +59,7 @@ export const workBins: WorkBin[] = [
     accent: '#6dff9a',
     src: 'projects/upload/maryam.mp4',
     poster: 'projects/thumbs/maryam.jpg',
+    duration: 58.7,
   },
   {
     id: 'apeex',
@@ -59,6 +68,7 @@ export const workBins: WorkBin[] = [
     accent: '#e8c547',
     src: 'projects/upload/apeex.mp4',
     poster: 'projects/thumbs/apeex.jpg',
+    duration: 25.29,
   },
   {
     id: 'harry-potter',
@@ -66,6 +76,8 @@ export const workBins: WorkBin[] = [
     note: 'Fan edit · motion & cut',
     accent: '#5ad0c8',
     src: 'projects/upload/harry-potter.mp4',
+    poster: 'projects/thumbs/harry-potter.jpg',
+    duration: 18.77,
   },
   {
     id: 'one-piece',
@@ -73,6 +85,8 @@ export const workBins: WorkBin[] = [
     note: 'Fan edit · energy & timing',
     accent: '#8ab4ff',
     src: 'projects/upload/one-piece.mp4',
+    poster: 'projects/thumbs/one-piece.jpg',
+    duration: 20.1,
   },
 ]
 

@@ -20,67 +20,196 @@ function mediaSrc(src: string) {
   return src.startsWith('http') ? src : `${import.meta.env.BASE_URL}${src}`
 }
 
-function ThumbVideo({
-  bin,
-  onDuration,
-}: {
-  bin: WorkBin
-  onDuration: (id: string, seconds: number) => void
-}) {
-  const ref = useRef<HTMLVideoElement>(null)
-  const poster = bin.poster ? mediaSrc(bin.poster) : undefined
+function ClipPoster({ bin }: { bin: WorkBin }) {
+  return (
+    <img
+      src={mediaSrc(bin.poster)}
+      alt=""
+      className="absolute inset-0 h-full w-full object-cover object-center"
+      draggable={false}
+      decoding="async"
+    />
+  )
+}
 
-  // Vertical / hard-to-seek clips: show a static poster image
-  if (poster) {
-    return (
-      <>
-        <img
-          src={poster}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover object-center"
-          draggable={false}
-        />
-        {/* Hidden probe for duration only */}
-        <video
-          ref={ref}
-          src={mediaSrc(bin.src)}
-          muted
-          playsInline
-          preload="metadata"
-          className="pointer-events-none absolute size-0 opacity-0"
-          onLoadedMetadata={() => {
-            const v = ref.current
-            if (!v) return
-            if (Number.isFinite(v.duration) && v.duration > 0) {
-              onDuration(bin.id, v.duration)
-            }
-          }}
-        />
-      </>
-    )
+function ClipPlayer({ bin, onClose }: { bin: WorkBin; onClose: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [playing, setPlaying] = useState(false)
+  const [current, setCurrent] = useState(0)
+  const [duration, setDuration] = useState(bin.duration)
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (e.key !== ' ') return
+      const tag = (e.target as HTMLElement)?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return
+      e.preventDefault()
+      togglePlay()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose, playing])
+
+  function togglePlay() {
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) {
+      void v.play()
+    } else {
+      v.pause()
+    }
+  }
+
+  function seek(ratio: number) {
+    const v = videoRef.current
+    const length = v?.duration || duration
+    if (!v || !length) return
+    v.currentTime = ratio * length
+    setCurrent(v.currentTime)
+  }
+
+  function scrub(clientX: number, el: HTMLElement) {
+    const rect = el.getBoundingClientRect()
+    if (!rect.width) return
+    seek(Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)))
   }
 
   return (
-    <video
-      ref={ref}
-      src={mediaSrc(bin.src)}
-      muted
-      playsInline
-      preload="metadata"
-      className="absolute inset-0 h-full w-full object-cover"
-      onLoadedMetadata={() => {
-        const v = ref.current
-        if (!v) return
-        if (Number.isFinite(v.duration) && v.duration > 0) {
-          onDuration(bin.id, v.duration)
-        }
-        try {
-          v.currentTime = Math.min(0.8, Math.max(0.1, v.duration * 0.08))
-        } catch {
-          /* ignore seek errors before ready */
-        }
+    <motion.div
+      className="fixed inset-0 z-50 flex items-stretch justify-center bg-bay/95 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:items-center sm:p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Playing ${bin.label}`}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
       }}
-    />
+    >
+      <motion.div
+        className="flex h-full w-full max-w-5xl flex-col sm:h-auto sm:max-h-[min(90svh,820px)]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 12 }}
+        transition={{ duration: 0.35, ease }}
+      >
+        <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-muted uppercase">
+              Now playing
+            </p>
+            <p className="truncate font-mono text-sm text-signal">{bin.label}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex min-h-11 shrink-0 items-center rounded-sm border border-phosphor/30 px-4 font-mono text-[10px] tracking-[0.16em] text-phosphor uppercase transition hover:border-phosphor/60"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col sm:min-h-[min(70svh,560px)]">
+          <MonitorBezel label={bin.label} fill>
+            <div className="absolute inset-0 bg-black">
+              <video
+                ref={videoRef}
+                src={mediaSrc(bin.src)}
+                poster={mediaSrc(bin.poster)}
+                className="absolute inset-0 h-full w-full object-contain"
+                playsInline
+                preload="auto"
+                autoPlay
+                onLoadedMetadata={() => {
+                  const v = videoRef.current
+                  if (v && Number.isFinite(v.duration)) setDuration(v.duration)
+                }}
+                onTimeUpdate={() => setCurrent(videoRef.current?.currentTime ?? 0)}
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+                onEnded={() => setPlaying(false)}
+                onClick={togglePlay}
+              />
+              <AnimatePresence>
+                {!playing && (
+                  <motion.button
+                    type="button"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={togglePlay}
+                    className="absolute inset-0 z-10 flex items-center justify-center bg-bay/25"
+                    aria-label="Play"
+                  >
+                    <span className="flex size-14 items-center justify-center rounded-sm border border-phosphor/40 bg-bay/70 text-phosphor">
+                      <span className="ml-0.5 border-y-[8px] border-l-[14px] border-y-transparent border-l-current" />
+                    </span>
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+          </MonitorBezel>
+
+          <div className="mt-3 flex shrink-0 flex-col gap-2 rounded-sm border border-phosphor/15 bg-bay-raised/90 px-3 py-2.5">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={togglePlay}
+                aria-label={playing ? 'Pause' : 'Play'}
+                className="flex size-10 items-center justify-center rounded-sm border border-phosphor/30 bg-bay-panel text-phosphor"
+              >
+                {playing ? (
+                  <span className="flex gap-0.5">
+                    <span className="h-3.5 w-0.5 bg-current" />
+                    <span className="h-3.5 w-0.5 bg-current" />
+                  </span>
+                ) : (
+                  <span className="ml-0.5 border-y-[6px] border-l-[10px] border-y-transparent border-l-current" />
+                )}
+              </button>
+              <span className="truncate font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
+                {bin.label}
+              </span>
+              <span className="ml-auto shrink-0 font-mono text-[10px] text-phosphor tabular-nums sm:text-xs">
+                {formatTimecode(Math.floor(current * 25))} / {formatClock(duration)}
+              </span>
+            </div>
+            <div
+              className="relative flex h-8 cursor-pointer items-center touch-none"
+              role="slider"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={duration ? Math.round((current / duration) * 100) : 0}
+              tabIndex={0}
+              onPointerDown={(e) => {
+                e.currentTarget.setPointerCapture(e.pointerId)
+                scrub(e.clientX, e.currentTarget)
+              }}
+              onPointerMove={(e) => {
+                if (e.buttons !== 1) return
+                scrub(e.clientX, e.currentTarget)
+              }}
+            >
+              <div className="relative h-1.5 w-full rounded-full bg-bay-panel">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-phosphor to-amber"
+                  style={{
+                    width: duration ? `${(current / duration) * 100}%` : '0%',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -90,11 +219,6 @@ export function TimelineWork() {
   const calm = reduced || coarse
   const [activeId, setActiveId] = useState<string | null>(null)
   const active = workBins.find((b) => b.id === activeId) ?? null
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [playing, setPlaying] = useState(false)
-  const [current, setCurrent] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [durations, setDurations] = useState<Record<string, number>>({})
   const [playerOpen, setPlayerOpen] = useState(false)
 
   useEffect(() => {
@@ -106,70 +230,13 @@ export function TimelineWork() {
     }
   }, [playerOpen])
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && playerOpen) {
-        closePlayer()
-        return
-      }
-      if (e.key !== ' ' || !playerOpen || !active) return
-      const tag = (e.target as HTMLElement)?.tagName
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return
-      e.preventDefault()
-      togglePlay()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [active, playerOpen, playing, duration])
-
-  function togglePlay() {
-    const v = videoRef.current
-    if (!v) return
-    if (v.paused) {
-      void v.play()
-      setPlaying(true)
-    } else {
-      v.pause()
-      setPlaying(false)
-    }
-  }
-
-  function seek(ratio: number) {
-    const v = videoRef.current
-    if (!v || !duration) return
-    v.currentTime = ratio * duration
-    setCurrent(v.currentTime)
-  }
-
-  function scrub(clientX: number, el: HTMLElement) {
-    const rect = el.getBoundingClientRect()
-    if (!rect.width) return
-    seek(Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)))
-  }
-
-  function onPlayerMeta(bin: WorkBin) {
-    const v = videoRef.current
-    if (!v) return
-    setDuration(v.duration)
-    setDurations((d) => ({ ...d, [bin.id]: v.duration }))
-  }
-
   function selectClip(id: string) {
     setActiveId(id)
-    setPlaying(false)
-    setCurrent(0)
-    setDuration(0)
     setPlayerOpen(true)
   }
 
   function closePlayer() {
-    videoRef.current?.pause()
-    setPlaying(false)
     setPlayerOpen(false)
-  }
-
-  function rememberDuration(id: string, seconds: number) {
-    setDurations((d) => (d[id] === seconds ? d : { ...d, [id]: seconds }))
   }
 
   return (
@@ -189,7 +256,6 @@ export function TimelineWork() {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {workBins.map((bin, i) => {
-            const d = durations[bin.id]
             return (
               <motion.button
                 key={bin.id}
@@ -204,7 +270,7 @@ export function TimelineWork() {
                 }`}
               >
                 <div className="relative aspect-[5/4] w-[42%] shrink-0 overflow-hidden bg-bay sm:aspect-video sm:w-full">
-                  <ThumbVideo bin={bin} onDuration={rememberDuration} />
+                  <ClipPoster bin={bin} />
                   <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-t from-bay via-bay/40 to-transparent sm:block" />
 
                   <span
@@ -228,7 +294,7 @@ export function TimelineWork() {
                         </p>
                       </div>
                       <span className="shrink-0 font-mono text-[10px] text-phosphor/90 tabular-nums">
-                        {d ? formatClock(d) : '—:—'}
+                        {formatClock(bin.duration)}
                       </span>
                     </div>
                   </div>
@@ -242,7 +308,7 @@ export function TimelineWork() {
                     {bin.note}
                   </p>
                   <span className="mt-2 font-mono text-[10px] text-phosphor/90 tabular-nums">
-                    {d ? formatClock(d) : '—:—'}
+                    {formatClock(bin.duration)}
                   </span>
                 </div>
               </motion.button>
@@ -251,145 +317,10 @@ export function TimelineWork() {
         </div>
       </div>
 
+
       <AnimatePresence>
         {playerOpen && active && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-stretch justify-center bg-bay/95 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:items-center sm:p-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease }}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Playing ${active.label}`}
-            onClick={(e) => {
-              if (e.target === e.currentTarget) closePlayer()
-            }}
-          >
-            <motion.div
-              className="flex h-full w-full max-w-5xl flex-col sm:h-auto sm:max-h-[min(90svh,820px)]"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.35, ease }}
-            >
-              <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-mono text-[10px] tracking-[0.2em] text-muted uppercase">
-                    Now playing
-                  </p>
-                  <p className="truncate font-mono text-sm text-signal">
-                    {active.label}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={closePlayer}
-                  className="flex min-h-11 shrink-0 items-center rounded-sm border border-phosphor/30 px-4 font-mono text-[10px] tracking-[0.16em] text-phosphor uppercase transition hover:border-phosphor/60"
-                >
-                  Close
-                </button>
-              </div>
-
-              <div className="flex min-h-0 flex-1 flex-col sm:min-h-[min(70svh,560px)]">
-                <MonitorBezel label={active.label} fill>
-                  <div className="absolute inset-0 bg-black">
-                    <video
-                      ref={videoRef}
-                      key={active.id}
-                      src={mediaSrc(active.src)}
-                      className="absolute inset-0 h-full w-full object-contain"
-                      playsInline
-                      preload="metadata"
-                      autoPlay
-                      onLoadedMetadata={() => onPlayerMeta(active)}
-                      onTimeUpdate={() =>
-                        setCurrent(videoRef.current?.currentTime ?? 0)
-                      }
-                      onPlay={() => setPlaying(true)}
-                      onPause={() => setPlaying(false)}
-                      onEnded={() => setPlaying(false)}
-                      onClick={togglePlay}
-                    />
-                    <AnimatePresence>
-                      {!playing && (
-                        <motion.button
-                          type="button"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.35 }}
-                          onClick={togglePlay}
-                          className="absolute inset-0 z-10 flex items-center justify-center bg-bay/25"
-                          aria-label="Play"
-                        >
-                          <span className="flex size-14 items-center justify-center rounded-sm border border-phosphor/40 bg-bay/70 text-phosphor">
-                            <span className="ml-0.5 border-y-[8px] border-l-[14px] border-y-transparent border-l-current" />
-                          </span>
-                        </motion.button>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </MonitorBezel>
-
-                <div className="mt-3 flex shrink-0 flex-col gap-2 rounded-sm border border-phosphor/15 bg-bay-raised/90 px-3 py-2.5">
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={togglePlay}
-                      aria-label={playing ? 'Pause' : 'Play'}
-                      className="flex size-10 items-center justify-center rounded-sm border border-phosphor/30 bg-bay-panel text-phosphor"
-                    >
-                      {playing ? (
-                        <span className="flex gap-0.5">
-                          <span className="h-3.5 w-0.5 bg-current" />
-                          <span className="h-3.5 w-0.5 bg-current" />
-                        </span>
-                      ) : (
-                        <span className="ml-0.5 border-y-[6px] border-l-[10px] border-y-transparent border-l-current" />
-                      )}
-                    </button>
-                    <span className="truncate font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
-                      {active.label}
-                    </span>
-                    <span className="ml-auto shrink-0 font-mono text-[10px] text-phosphor tabular-nums sm:text-xs">
-                      {formatTimecode(Math.floor(current * 25))} /{' '}
-                      {formatClock(duration)}
-                    </span>
-                  </div>
-                  <div
-                    className="relative flex h-8 cursor-pointer items-center touch-none"
-                    role="slider"
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={
-                      duration ? Math.round((current / duration) * 100) : 0
-                    }
-                    tabIndex={0}
-                    onPointerDown={(e) => {
-                      e.currentTarget.setPointerCapture(e.pointerId)
-                      scrub(e.clientX, e.currentTarget)
-                    }}
-                    onPointerMove={(e) => {
-                      if (e.buttons !== 1) return
-                      scrub(e.clientX, e.currentTarget)
-                    }}
-                  >
-                    <div className="relative h-1.5 w-full rounded-full bg-bay-panel">
-                      <div
-                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-phosphor to-amber"
-                        style={{
-                          width: duration
-                            ? `${(current / duration) * 100}%`
-                            : '0%',
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+          <ClipPlayer key={active.id} bin={active} onClose={closePlayer} />
         )}
       </AnimatePresence>
     </section>
