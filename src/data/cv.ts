@@ -1,7 +1,7 @@
 export const profile = {
   name: 'Osama Adwan',
   title: 'Video Editor · Post-Production',
-  location: 'Damascus, Syria',
+  location: 'As suwayda, Syria',
   phone: '+963 939 651 766',
   email: 'vosamaqiadwan@gmail.com',
   summary:
@@ -28,28 +28,28 @@ export const workBins: WorkBin[] = [
     label: 'REEL 01',
     note: 'Showreel cut · pacing & polish',
     accent: '#00f0ff',
-    src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/reel-01.mp4',
+    src: 'projects/upload/reel-01.mp4',
   },
   {
     id: 'study-zone',
     label: 'STUDY ZONE',
     note: 'Educational promo · narrative rhythm',
     accent: '#b8ff3c',
-    src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/study-zone.mp4',
+    src: 'projects/upload/study-zone.mp4',
   },
   {
     id: 'al-madraj',
     label: 'المدرج',
     note: 'Location story · atmosphere & grade',
     accent: '#7b8cff',
-    src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/al-madraj.mp4',
+    src: 'projects/upload/al-madraj.mp4',
   },
   {
     id: 'maryam',
     label: 'مريم',
     note: 'Portrait edit · color & sound',
     accent: '#6dff9a',
-    src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/maryam.mp4',
+    src: 'projects/upload/maryam.mp4',
     poster: 'projects/thumbs/maryam.jpg',
   },
   {
@@ -57,7 +57,7 @@ export const workBins: WorkBin[] = [
     label: 'APEEX',
     note: 'Brand / product spot',
     accent: '#e8c547',
-    src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/apeex.mp4',
+    src: 'projects/upload/apeex.mp4',
     poster: 'projects/thumbs/apeex.jpg',
   },
   {
@@ -65,14 +65,14 @@ export const workBins: WorkBin[] = [
     label: 'HARRY POTTER',
     note: 'Fan edit · motion & cut',
     accent: '#5ad0c8',
-    src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/harry-potter.mp4',
+    src: 'projects/upload/harry-potter.mp4',
   },
   {
     id: 'one-piece',
     label: 'ONE PIECE',
     note: 'Fan edit · energy & timing',
     accent: '#8ab4ff',
-    src: 'https://fwupzsjkhgfetqeuiwow.supabase.co/storage/v1/object/public/Osama/one-piece.mp4',
+    src: 'projects/upload/one-piece.mp4',
   },
 ]
 

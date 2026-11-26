@@ -2,9 +2,9 @@ import { readdirSync, rmSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 /**
- * GitHub Pages is served via git push. Large MP4s often fail
- * (100MB hard limit + flaky pushes). Strip all videos from dist
- * for deploy; they still work with `npm run dev` locally.
+ * GitHub Pages rejects files over 100MB. Drop the full-quality
+ * masters in dist/projects/, and keep the compressed copies in
+ * dist/projects/upload/ — those are what the site plays.
  */
 const dir = join(process.cwd(), 'dist', 'projects')
 
