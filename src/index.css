@@ -23,6 +23,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 4.75rem;
+    scroll-padding-bottom: 5.25rem;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      scroll-padding-bottom: 0;
+    }
   }
 
   body {
@@ -45,7 +53,13 @@
         #070a11 70%,
         #05070c 100%
       );
-    background-attachment: fixed;
+    background-attachment: scroll;
+  }
+
+  @media (min-width: 640px) {
+    body {
+      background-attachment: fixed;
+    }
   }
 
   body::before {

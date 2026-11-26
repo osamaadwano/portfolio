@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { profile } from '../data/cv'
+import { useCoarsePointer } from '../hooks/useCoarsePointer'
 import { formatTimecode } from '../hooks/useTimecode'
 
 type Phase = 'boot' | 'link' | 'id'
@@ -12,6 +13,7 @@ type Props = {
 const ease = [0.22, 1, 0.36, 1] as const
 
 export function OpeningIntro({ onComplete }: Props) {
+  const coarse = useCoarsePointer()
   const [phase, setPhase] = useState<Phase>('boot')
   const [frames, setFrames] = useState(0)
   const [bootLines, setBootLines] = useState(0)
@@ -23,23 +25,26 @@ export function OpeningIntro({ onComplete }: Props) {
   ]
 
   useEffect(() => {
-    const t1 = window.setTimeout(() => setPhase('link'), 1800)
-    const t2 = window.setTimeout(() => setPhase('id'), 3200)
-    const t3 = window.setTimeout(() => onComplete(), 5600)
+    const boot = coarse ? 900 : 1800
+    const link = coarse ? 1700 : 3200
+    const done = coarse ? 3000 : 5600
+    const t1 = window.setTimeout(() => setPhase('link'), boot)
+    const t2 = window.setTimeout(() => setPhase('id'), link)
+    const t3 = window.setTimeout(() => onComplete(), done)
     return () => {
       window.clearTimeout(t1)
       window.clearTimeout(t2)
       window.clearTimeout(t3)
     }
-  }, [onComplete])
+  }, [onComplete, coarse])
 
   useEffect(() => {
     if (phase !== 'boot') return
     const id = window.setInterval(() => {
       setBootLines((n) => Math.min(n + 1, lines.length))
-    }, 420)
+    }, coarse ? 260 : 420)
     return () => window.clearInterval(id)
-  }, [phase, lines.length])
+  }, [phase, lines.length, coarse])
 
   useEffect(() => {
     if (phase === 'boot') return
@@ -57,24 +62,29 @@ export function OpeningIntro({ onComplete }: Props) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-bay"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-bay px-4"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.55, ease }}
+      transition={{ duration: coarse ? 0.35 : 0.55, ease }}
       role="dialog"
       aria-label="Opening sequence"
+      onClick={onComplete}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(0_232_240/0.06),transparent_55%)]" />
 
       <button
         type="button"
         onClick={onComplete}
-        className="absolute top-5 right-5 z-20 font-mono text-[11px] tracking-[0.18em] text-muted uppercase transition duration-300 hover:text-phosphor"
+        className="absolute top-[max(1rem,env(safe-area-inset-top))] right-4 z-20 flex min-h-11 items-center font-mono text-[11px] tracking-[0.16em] text-muted uppercase transition duration-300 hover:text-phosphor sm:right-5"
       >
-        Esc · Skip
+        <span className="sm:hidden">Skip</span>
+        <span className="hidden sm:inline">Esc · Skip</span>
       </button>
 
-      <div className="relative aspect-video w-[min(92vw,720px)] overflow-hidden rounded-sm border border-phosphor/20 bg-bay-raised">
+      <div
+        className="relative h-[min(46svh,320px)] w-full max-w-[720px] overflow-hidden rounded-sm border border-phosphor/20 bg-bay-raised sm:aspect-video sm:h-auto sm:w-[min(92vw,720px)]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <AnimatePresence mode="wait">
           {phase === 'boot' && (
             <motion.div
@@ -135,7 +145,7 @@ export function OpeningIntro({ onComplete }: Props) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.55, ease }}
             >
-              <div className="w-[min(86%,400px)] rounded-sm border border-phosphor/25 bg-bay-panel/90 px-8 py-8 text-center">
+              <div className="w-[min(88%,400px)] rounded-sm border border-phosphor/25 bg-bay-panel/90 px-5 py-6 text-center sm:px-8 sm:py-8">
                 <p className="font-mono text-[10px] tracking-[0.28em] text-amber uppercase">
                   Editor
                 </p>

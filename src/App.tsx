@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion'
 import { ContactDeck } from './components/ContactDeck'
 import { ExperienceTracks } from './components/ExperienceTracks'
 import { Hero } from './components/Hero'
+import { MobileDock } from './components/MobileDock'
 import { OpeningIntro } from './components/OpeningIntro'
 import { SkillsScopes } from './components/SkillsScopes'
 import { TimelineWork } from './components/TimelineWork'
@@ -24,7 +25,7 @@ export default function App() {
         }`}
         aria-hidden={!contentVisible}
       >
-        <nav className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between border-b border-phosphor/12 bg-bay/70 px-4 py-3 backdrop-blur-md sm:px-8">
+        <nav className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between border-b border-phosphor/12 bg-bay/80 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-md sm:px-8">
           <a
             href="#"
             className="font-display text-sm font-bold tracking-[0.1em] text-signal"
@@ -48,13 +49,14 @@ export default function App() {
           </div>
         </nav>
 
-        <main className="pt-14">
+        <main className="pt-16 pb-24 sm:pt-14 sm:pb-0">
           <Hero />
           <TimelineWork />
           <ExperienceTracks />
           <SkillsScopes />
           <ContactDeck />
         </main>
+        {contentVisible && <MobileDock />}
       </div>
     </>
   )

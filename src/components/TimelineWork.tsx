@@ -2,8 +2,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { workBins, type WorkBin } from '../data/cv'
 import { formatTimecode } from '../hooks/useTimecode'
+import { useCoarsePointer } from '../hooks/useCoarsePointer'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import { MonitorBezel } from './MonitorBezel'
+import { SectionMark } from './SectionMark'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -84,6 +86,8 @@ function ThumbVideo({
 
 export function TimelineWork() {
   const reduced = usePrefersReducedMotion()
+  const coarse = useCoarsePointer()
+  const calm = reduced || coarse
   const [activeId, setActiveId] = useState<string | null>(null)
   const active = workBins.find((b) => b.id === activeId) ?? null
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -137,6 +141,12 @@ export function TimelineWork() {
     setCurrent(v.currentTime)
   }
 
+  function scrub(clientX: number, el: HTMLElement) {
+    const rect = el.getBoundingClientRect()
+    if (!rect.width) return
+    seek(Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)))
+  }
+
   function onPlayerMeta(bin: WorkBin) {
     const v = videoRef.current
     if (!v) return
@@ -163,21 +173,21 @@ export function TimelineWork() {
   }
 
   return (
-    <section id="work" className="relative px-4 py-20 sm:px-8">
+    <section id="work" className="relative scroll-mt-20 border-t border-phosphor/10 px-4 py-12 sm:px-8 sm:py-20">
       <div className="mx-auto max-w-6xl">
-        <header className="mb-10">
-          <p className="font-mono text-[10px] tracking-[0.28em] text-amber uppercase">
-            Work
-          </p>
-          <h2 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            Selected cuts
-          </h2>
-          <p className="mt-2 max-w-lg text-sm text-muted">
-            Click a cut to open the player.
-          </p>
-        </header>
+        <SectionMark
+          index="01"
+          kicker="Work"
+          title="Selected cuts"
+          lede={
+            <>
+              <span className="sm:hidden">Tap a cut to play.</span>
+              <span className="hidden sm:inline">Click a cut to open the player.</span>
+            </>
+          }
+        />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {workBins.map((bin, i) => {
             const d = durations[bin.id]
             return (
@@ -185,17 +195,17 @@ export function TimelineWork() {
                 key={bin.id}
                 type="button"
                 onClick={() => selectClip(bin.id)}
-                initial={{ opacity: 0, y: 16 }}
+                initial={calm ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-20px' }}
-                transition={{ delay: i * 0.05, duration: 0.55, ease }}
-                className={`group relative overflow-hidden rounded-sm border border-phosphor/15 bg-bay-raised/50 text-left shadow-[0_12px_40px_-28px_rgb(0_0_0/0.8)] transition-[transform,border-color,box-shadow] duration-300 hover:z-10 hover:border-phosphor/40 hover:shadow-[0_20px_50px_-24px_rgb(0_232_240/0.25)] focus-visible:z-10 focus-visible:border-phosphor/50 focus-visible:outline-none ${
-                  reduced ? '' : 'hover:scale-[1.03]'
+                transition={{ delay: calm ? 0 : i * 0.05, duration: calm ? 0.35 : 0.55, ease }}
+                className={`group flex overflow-hidden rounded-sm border border-phosphor/15 bg-bay-raised/50 text-left shadow-[0_12px_40px_-28px_rgb(0_0_0/0.8)] transition-[border-color,box-shadow] duration-300 hover:z-10 hover:border-phosphor/40 hover:shadow-[0_20px_50px_-24px_rgb(0_232_240/0.25)] focus-visible:z-10 focus-visible:border-phosphor/50 focus-visible:outline-none sm:block ${
+                  calm ? '' : 'hover:scale-[1.03]'
                 }`}
               >
-                <div className="relative aspect-video overflow-hidden bg-bay">
+                <div className="relative aspect-[5/4] w-[42%] shrink-0 overflow-hidden bg-bay sm:aspect-video sm:w-full">
                   <ThumbVideo bin={bin} onDuration={rememberDuration} />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bay via-bay/40 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-t from-bay via-bay/40 to-transparent sm:block" />
 
                   <span
                     className="absolute top-0 left-0 h-full w-1"
@@ -203,11 +213,11 @@ export function TimelineWork() {
                     aria-hidden
                   />
 
-                  <span className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-sm border border-phosphor/35 bg-bay/70 text-phosphor opacity-90 transition duration-300 group-hover:border-phosphor/60 group-hover:bg-phosphor/15">
+                  <span className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-sm border border-phosphor/35 bg-bay/70 text-phosphor opacity-90 transition duration-300 group-hover:border-phosphor/60 group-hover:bg-phosphor/15 sm:top-3 sm:right-3 sm:size-8">
                     <span className="ml-0.5 border-y-[5px] border-l-[8px] border-y-transparent border-l-current" />
                   </span>
 
-                  <div className="absolute inset-x-0 bottom-0 p-3.5">
+                  <div className="absolute inset-x-0 bottom-0 hidden p-3.5 sm:block">
                     <div className="flex items-end justify-between gap-2">
                       <div className="min-w-0">
                         <p className="truncate font-mono text-sm tracking-[0.1em] text-signal">
@@ -223,6 +233,18 @@ export function TimelineWork() {
                     </div>
                   </div>
                 </div>
+
+                <div className="flex min-w-0 flex-1 flex-col justify-center px-3.5 py-3 sm:hidden">
+                  <p className="font-mono text-[13px] tracking-[0.08em] text-signal">
+                    {bin.label}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted">
+                    {bin.note}
+                  </p>
+                  <span className="mt-2 font-mono text-[10px] text-phosphor/90 tabular-nums">
+                    {d ? formatClock(d) : '—:—'}
+                  </span>
+                </div>
               </motion.button>
             )
           })}
@@ -232,7 +254,7 @@ export function TimelineWork() {
       <AnimatePresence>
         {playerOpen && active && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-stretch justify-center bg-bay/95 p-4 backdrop-blur-md sm:items-center sm:p-8"
+            className="fixed inset-0 z-50 flex items-stretch justify-center bg-bay/95 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:items-center sm:p-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -263,7 +285,7 @@ export function TimelineWork() {
                 <button
                   type="button"
                   onClick={closePlayer}
-                  className="shrink-0 rounded-sm border border-phosphor/30 px-3 py-2 font-mono text-[10px] tracking-[0.18em] text-phosphor uppercase transition hover:border-phosphor/60"
+                  className="flex min-h-11 shrink-0 items-center rounded-sm border border-phosphor/30 px-4 font-mono text-[10px] tracking-[0.16em] text-phosphor uppercase transition hover:border-phosphor/60"
                 >
                   Close
                 </button>
@@ -330,13 +352,13 @@ export function TimelineWork() {
                     <span className="truncate font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
                       {active.label}
                     </span>
-                    <span className="ml-auto font-mono text-xs text-phosphor tabular-nums">
+                    <span className="ml-auto shrink-0 font-mono text-[10px] text-phosphor tabular-nums sm:text-xs">
                       {formatTimecode(Math.floor(current * 25))} /{' '}
                       {formatClock(duration)}
                     </span>
                   </div>
                   <div
-                    className="relative h-1.5 cursor-pointer rounded-full bg-bay-panel"
+                    className="relative flex h-8 cursor-pointer items-center touch-none"
                     role="slider"
                     aria-valuemin={0}
                     aria-valuemax={100}
@@ -344,24 +366,25 @@ export function TimelineWork() {
                       duration ? Math.round((current / duration) * 100) : 0
                     }
                     tabIndex={0}
-                    onClick={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      seek(
-                        Math.min(
-                          1,
-                          Math.max(0, (e.clientX - rect.left) / rect.width),
-                        ),
-                      )
+                    onPointerDown={(e) => {
+                      e.currentTarget.setPointerCapture(e.pointerId)
+                      scrub(e.clientX, e.currentTarget)
+                    }}
+                    onPointerMove={(e) => {
+                      if (e.buttons !== 1) return
+                      scrub(e.clientX, e.currentTarget)
                     }}
                   >
-                    <div
-                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-phosphor to-amber"
-                      style={{
-                        width: duration
-                          ? `${(current / duration) * 100}%`
-                          : '0%',
-                      }}
-                    />
+                    <div className="relative h-1.5 w-full rounded-full bg-bay-panel">
+                      <div
+                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-phosphor to-amber"
+                        style={{
+                          width: duration
+                            ? `${(current / duration) * 100}%`
+                            : '0%',
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

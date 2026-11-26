@@ -8,6 +8,7 @@ import {
 } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { profile } from '../data/cv'
+import { useCoarsePointer } from '../hooks/useCoarsePointer'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import { useTimecode } from '../hooks/useTimecode'
 
@@ -28,15 +29,24 @@ function RotatingCraft({ reduced }: { reduced: boolean }) {
   }, [reduced])
 
   return (
-    <span className="relative inline-flex h-[1.2em] min-w-[7.5ch] overflow-hidden align-bottom">
+    <span className="relative inline-grid h-[1.15em] overflow-hidden align-bottom">
+      {crafts.map((word) => (
+        <span
+          key={word}
+          className="invisible col-start-1 row-start-1 px-0.5 whitespace-nowrap"
+          aria-hidden
+        >
+          {word}
+        </span>
+      ))}
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={crafts[index]}
           initial={reduced ? false : { y: '100%', opacity: 0 }}
           animate={{ y: '0%', opacity: 1 }}
           exit={{ y: '-100%', opacity: 0 }}
-          transition={{ duration: 0.5, ease }}
-          className="text-amber"
+          transition={{ duration: 0.45, ease }}
+          className="col-start-1 row-start-1 px-0.5 whitespace-nowrap text-amber"
         >
           {crafts[index]}
         </motion.span>
@@ -47,11 +57,13 @@ function RotatingCraft({ reduced }: { reduced: boolean }) {
 
 function PreviewDeck({
   reduced,
+  coarse,
   timecode,
   playing,
   onToggle,
 }: {
   reduced: boolean
+  coarse: boolean
   timecode: string
   playing: boolean
   onToggle: () => void
@@ -59,6 +71,8 @@ function PreviewDeck({
   const ref = useRef<HTMLDivElement>(null)
   const px = useMotionValue(0)
   const py = useMotionValue(0)
+  const tilt = !reduced && !coarse
+  const bars = coarse ? 14 : 28
 
   const spring = { stiffness: 140, damping: 20, mass: 0.4 }
   const rotateX = useSpring(useTransform(py, [-0.5, 0.5], [6, -6]), spring)
@@ -69,7 +83,7 @@ function PreviewDeck({
   const glow = useMotionTemplate`radial-gradient(340px circle at ${glowX} ${glowY}, rgb(0 232 240 / 0.16), transparent 70%)`
 
   function handleMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (reduced) return
+    if (!tilt) return
     const rect = ref.current?.getBoundingClientRect()
     if (!rect) return
     px.set((e.clientX - rect.left) / rect.width - 0.5)
@@ -87,7 +101,7 @@ function PreviewDeck({
         ref={ref}
         onPointerMove={handleMove}
         onPointerLeave={handleLeave}
-        style={reduced ? undefined : { rotateX, rotateY, transformStyle: 'preserve-3d' }}
+        style={tilt ? { rotateX, rotateY, transformStyle: 'preserve-3d' } : undefined}
         className="relative rounded-lg border border-phosphor/20 bg-bay-raised/80 p-2.5 shadow-[0_30px_80px_-40px_rgb(0_0_0/0.9)] backdrop-blur-sm"
       >
         {/* Deck header */}
@@ -112,8 +126,8 @@ function PreviewDeck({
           />
 
           {/* Waveform */}
-          <div className="absolute inset-x-10 top-1/2 flex h-24 -translate-y-1/3 items-center justify-center gap-[3px]">
-            {Array.from({ length: 28 }).map((_, i) => (
+          <div className="absolute inset-x-6 top-1/2 flex h-20 -translate-y-1/3 items-center justify-center gap-[3px] sm:inset-x-10 sm:h-24">
+            {Array.from({ length: bars }).map((_, i) => (
               <motion.span
                 key={i}
                 className="w-full flex-1 rounded-[1px] bg-gradient-to-t from-phosphor/10 via-phosphor/40 to-phosphor/70"
@@ -169,7 +183,7 @@ function PreviewDeck({
             type="button"
             onClick={onToggle}
             aria-label={playing ? 'Pause preview' : 'Play preview'}
-            className="flex size-8 items-center justify-center rounded-sm border border-phosphor/30 bg-bay-panel text-phosphor transition duration-300 hover:border-phosphor/60 hover:bg-phosphor/10"
+            className="flex size-11 items-center justify-center rounded-sm border border-phosphor/30 bg-bay-panel text-phosphor transition duration-300 hover:border-phosphor/60 hover:bg-phosphor/10 sm:size-8"
           >
             {playing ? (
               <span className="flex gap-0.5">
@@ -183,8 +197,8 @@ function PreviewDeck({
 
           <div className="h-px flex-1 bg-gradient-to-r from-phosphor/40 via-phosphor/10 to-transparent" />
 
-          <span className="font-mono text-[9px] tracking-[0.18em] text-muted uppercase">
-            Premiere · After Effects
+          <span className="font-mono text-[9px] tracking-[0.08em] text-muted uppercase sm:tracking-[0.18em]">
+            Premiere · AE
           </span>
         </div>
       </motion.div>
@@ -194,16 +208,18 @@ function PreviewDeck({
 
 export function Hero() {
   const reduced = usePrefersReducedMotion()
+  const coarse = useCoarsePointer()
   const [playing, setPlaying] = useState(!reduced)
   const timecode = useTimecode(playing && !reduced)
 
   const [first, last] = profile.name.split(' ')
+  const enter = coarse ? 0.45 : 0.7
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden px-4 pt-12 pb-10 sm:px-8">
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
+    <section className="relative flex flex-col justify-center overflow-hidden px-4 pt-4 pb-6 sm:min-h-[100svh] sm:px-8 sm:pt-12 sm:pb-10">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-8 sm:gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
         {/* Type stack */}
-        <div>
+        <div className="text-center sm:text-left">
           <h1 className="font-display text-[clamp(2.8rem,8.5vw,5.6rem)] leading-[0.92] font-extrabold tracking-[-0.03em] text-signal">
             {[first, last].map((word, i) => (
               <span key={word} className="block overflow-hidden">
@@ -211,7 +227,7 @@ export function Hero() {
                   className="block"
                   initial={reduced ? false : { y: '110%' }}
                   animate={{ y: '0%' }}
-                  transition={{ duration: 0.9, delay: i * 0.1, ease }}
+                  transition={{ duration: coarse ? 0.55 : 0.9, delay: i * 0.08, ease }}
                 >
                   {word}
                 </motion.span>
@@ -222,17 +238,18 @@ export function Hero() {
           <motion.p
             initial={reduced ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.28, ease }}
-            className="mt-5 font-mono text-sm tracking-[0.06em] text-signal/80 sm:text-base"
+            transition={{ duration: enter, delay: 0.2, ease }}
+            className="mt-4 font-mono text-[13px] leading-relaxed text-signal/85 sm:mt-5 sm:text-base sm:tracking-[0.04em]"
           >
-            Video Editor — built on <RotatingCraft reduced={reduced} />
+            <span className="block sm:inline">Video Editor — built on </span>
+            <RotatingCraft reduced={reduced} />
           </motion.p>
 
           <motion.p
             initial={reduced ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.36, ease }}
-            className="mt-4 max-w-md text-sm leading-relaxed text-muted"
+            transition={{ duration: enter, delay: 0.28, ease }}
+            className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted sm:mx-0 sm:mt-4"
           >
             Full post-production for ads, VSL, news, travel, and social —
             cutting, color, sound, and motion delivered frame by frame.
@@ -241,19 +258,19 @@ export function Hero() {
           <motion.div
             initial={reduced ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.44, ease }}
-            className="mt-8 flex flex-wrap gap-3"
+            transition={{ duration: enter, delay: 0.34, ease }}
+            className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-3"
           >
             <a
               href="#work"
-              className="group relative overflow-hidden rounded-sm border border-phosphor/50 bg-phosphor/10 px-6 py-3 font-mono text-xs tracking-[0.18em] text-phosphor uppercase transition duration-300 hover:border-phosphor hover:bg-phosphor/20"
+              className="group relative flex min-h-12 items-center justify-center overflow-hidden rounded-sm border border-phosphor/50 bg-phosphor/10 px-6 py-3 text-center font-mono text-xs tracking-[0.16em] text-phosphor uppercase transition duration-300 hover:border-phosphor hover:bg-phosphor/20"
             >
               <span className="relative z-10">View Work</span>
               <span className="absolute inset-0 -translate-x-full bg-phosphor/15 transition-transform duration-500 group-hover:translate-x-0" />
             </a>
             <a
               href="#contact"
-              className="rounded-sm border border-bezel-edge px-6 py-3 font-mono text-xs tracking-[0.18em] text-signal uppercase transition duration-300 hover:border-amber/60 hover:text-amber"
+              className="flex min-h-12 items-center justify-center rounded-sm border border-bezel-edge px-6 py-3 text-center font-mono text-xs tracking-[0.16em] text-signal uppercase transition duration-300 hover:border-amber/60 hover:text-amber"
             >
               Get in touch
             </a>
@@ -268,6 +285,7 @@ export function Hero() {
         >
           <PreviewDeck
             reduced={reduced}
+            coarse={coarse}
             timecode={timecode}
             playing={playing}
             onToggle={() => setPlaying((p) => !p)}
@@ -280,7 +298,7 @@ export function Hero() {
         initial={reduced ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.7, ease }}
-        className="relative z-10 mx-auto mt-14 w-full max-w-6xl"
+        className="relative z-10 mx-auto mt-8 hidden w-full max-w-6xl sm:mt-14 sm:block"
       >
         <div className="flex items-center gap-4">
           <div className="flex flex-1 gap-1 overflow-hidden">
